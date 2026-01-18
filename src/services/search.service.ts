@@ -90,9 +90,9 @@ export class SearchService {
 
         if (filters.hasExpiredCompliance !== undefined) {
             const now = new Date();
-            return vehicles.filter((v) => {
+            return vehicles.filter((v: any) => {
                 const hasExpired = v.compliance.some(
-                    (c) => new Date(c.expiryDate) < now
+                    (c: any) => new Date(c.expiryDate) < now
                 );
                 return filters.hasExpiredCompliance ? hasExpired : !hasExpired;
             });

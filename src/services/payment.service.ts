@@ -31,7 +31,7 @@ export class PaymentService {
             throw new AppError(400, 'Some compliance items not found');
         }
 
-        const amount = items.reduce((sum, item) => sum + Number(item.price), 0);
+        const amount = items.reduce((sum: number, item: any) => sum + Number(item.price), 0);
         const fee = calculateFee(amount);
         const totalAmount = amount + fee;
 
@@ -52,7 +52,7 @@ export class PaymentService {
                 channel: data.agentId ? 'AGENT' : 'SELF',
                 agentId: data.agentId,
                 metadata: {
-                    complianceItems: items.map(item => ({
+                    complianceItems: items.map((item: any) => ({
                         id: item.id,
                         name: item.name,
                         price: Number(item.price),

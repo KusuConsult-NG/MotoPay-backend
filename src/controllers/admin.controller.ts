@@ -3,7 +3,7 @@ import adminService from '../services/admin.service';
 import { ApiResponse } from '../types';
 
 export class AdminController {
-    async getDashboardMetrics(req: Request, res: Response, next: NextFunction) {
+    async getDashboardMetrics(_req: Request, res: Response, next: NextFunction) {
         try {
             const metrics = await adminService.getDashboardMetrics();
 

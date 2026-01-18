@@ -101,7 +101,7 @@ export class AdminService {
             _count: true,
         });
 
-        return transactions.map(t => ({
+        return transactions.map((t: any) => ({
             ...t,
             _sum: {
                 totalAmount: Number(t._sum?.totalAmount || 0)
