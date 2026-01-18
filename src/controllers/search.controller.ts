@@ -25,9 +25,9 @@ export class SearchController {
                 data: results,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -50,9 +50,9 @@ export class SearchController {
                 data: results,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 }

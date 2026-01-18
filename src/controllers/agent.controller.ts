@@ -38,9 +38,9 @@ export class AgentController {
                 data: result,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -61,9 +61,9 @@ export class AgentController {
                 data: result,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -78,9 +78,9 @@ export class AgentController {
                 data: summary,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -97,9 +97,9 @@ export class AgentController {
                 data: result,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 

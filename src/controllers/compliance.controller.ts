@@ -14,9 +14,9 @@ export class ComplianceController {
                 data: items,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -31,9 +31,9 @@ export class ComplianceController {
                 data: item,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -48,9 +48,9 @@ export class ComplianceController {
                 data: requirements,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -68,9 +68,9 @@ export class ComplianceController {
                 data: item,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -85,9 +85,9 @@ export class ComplianceController {
                 data: history,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 }

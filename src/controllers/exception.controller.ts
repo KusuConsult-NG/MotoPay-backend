@@ -37,9 +37,9 @@ export class ExceptionController {
                 data: result,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -54,9 +54,9 @@ export class ExceptionController {
                 data: exception,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -73,9 +73,9 @@ export class ExceptionController {
                 data: exception,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -92,9 +92,9 @@ export class ExceptionController {
                 data: exception,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -111,9 +111,9 @@ export class ExceptionController {
                 data: exception,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -131,9 +131,9 @@ export class ExceptionController {
                 data: { count: results.length },
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 }

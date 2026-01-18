@@ -19,9 +19,9 @@ export class PaymentController {
                 data: result,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -36,9 +36,9 @@ export class PaymentController {
                 data: result.transaction,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -72,9 +72,9 @@ export class PaymentController {
                 data: transaction,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -91,9 +91,9 @@ export class PaymentController {
                 data: transaction,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 }

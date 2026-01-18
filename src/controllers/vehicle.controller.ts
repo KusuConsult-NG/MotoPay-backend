@@ -14,9 +14,9 @@ export class VehicleController {
                 data: vehicle,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -48,9 +48,9 @@ export class VehicleController {
                 data: vehicle,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -66,9 +66,9 @@ export class VehicleController {
                 data: vehicle,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -83,9 +83,9 @@ export class VehicleController {
                 data: compliance,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -106,9 +106,9 @@ export class VehicleController {
                 data: history,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 }

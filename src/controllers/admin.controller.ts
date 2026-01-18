@@ -13,9 +13,9 @@ export class AdminController {
                 data: metrics,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -45,9 +45,9 @@ export class AdminController {
                 data: result,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -73,9 +73,9 @@ export class AdminController {
                 data: collections,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -90,9 +90,9 @@ export class AdminController {
                 data,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 }

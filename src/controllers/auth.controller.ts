@@ -31,9 +31,9 @@ export class AuthController {
                 data: result,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -56,9 +56,9 @@ export class AuthController {
                 data: result,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -75,9 +75,9 @@ export class AuthController {
                 message: 'Logout successful',
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -89,9 +89,9 @@ export class AuthController {
                 data: req.user,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -107,9 +107,9 @@ export class AuthController {
                 message: 'Password changed successfully',
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -123,9 +123,9 @@ export class AuthController {
                 message: result.message,
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -139,9 +139,9 @@ export class AuthController {
                 message: 'Password reset successful',
             };
 
-            res.json(response);
+            return res.json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 }
