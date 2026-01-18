@@ -5,8 +5,8 @@ import { AppError } from '../utils/helpers';
 import { TokenPayload } from '../types';
 import prisma from '../config/database';
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Express {
         interface Request {
             user?: TokenPayload & { id: string };
