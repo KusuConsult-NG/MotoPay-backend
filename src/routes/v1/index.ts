@@ -20,10 +20,10 @@ router.use('/compliance', complianceRoutes);
 router.use('/search', searchRoutes);
 
 // Health check
-router.get('/health', (req, res) => {
+router.get('/health', (_req, res) => {
     res.json({
         success: true,
-        message: 'MotoPay API is running',
+        message: 'MotoPay API Service is healthy',
         timestamp: new Date().toISOString(),
     });
 });
