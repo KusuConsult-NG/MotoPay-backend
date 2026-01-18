@@ -22,7 +22,7 @@ export const validate = (schema: Joi.ObjectSchema) => {
         }
 
         req.body = value;
-        next();
+        return next();
     };
 };
 
@@ -47,6 +47,6 @@ export const validateQuery = (schema: Joi.ObjectSchema) => {
         }
 
         req.query = value;
-        next();
+        return next();
     };
 };

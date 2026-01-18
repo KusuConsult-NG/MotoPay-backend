@@ -48,7 +48,7 @@ export const authenticate = async (
                 role: user.role,
             };
 
-            next();
+            return next();
         } catch (error) {
             if (error instanceof jwt.TokenExpiredError) {
                 throw new AppError(401, 'Token expired');
@@ -59,7 +59,7 @@ export const authenticate = async (
             throw error;
         }
     } catch (error) {
-        next(error);
+        return next(error);
     }
 };
 
@@ -73,7 +73,7 @@ export const authorize = (...roles: string[]) => {
             return next(new AppError(403, 'You do not have permission to access this resource'));
         }
 
-        next();
+        return next();
     };
 };
 
@@ -89,9 +89,9 @@ export const optionalAuth = async (
             await authenticate(req, _res, next);
         } catch (error) {
             // Continue without auth if token is invalid
-            next();
+            return next();
         }
     } else {
-        next();
+        return next();
     }
 };

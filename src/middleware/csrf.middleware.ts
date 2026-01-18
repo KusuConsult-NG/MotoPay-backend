@@ -12,12 +12,12 @@ export const csrfProtection = csrf({
 
 export const provideCsrfToken = (req: Request, res: Response, next: NextFunction) => {
     res.locals.csrfToken = req.csrfToken?.();
-    next();
+    return next();
 };
 
 // Get CSRF token endpoint
 export const getCsrfToken = (req: Request, res: Response) => {
-    res.json({
+    return res.json({
         success: true,
         data: {
             csrfToken: req.csrfToken?.(),
