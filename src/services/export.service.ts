@@ -44,7 +44,7 @@ export class ExportService {
             ],
         });
 
-        const records = transactions.map((t) => ({
+        const records = transactions.map((t: any) => ({
             reference: t.reference,
             date: new Date(t.createdAt).toLocaleDateString(),
             plateNumber: t.vehicle.plateNumber,
@@ -81,7 +81,7 @@ export class ExportService {
             ],
         });
 
-        const records = vehicles.map((v) => ({
+        const records = vehicles.map((v: any) => ({
             plateNumber: v.plateNumber,
             chassisNumber: v.chassisNumber,
             make: v.make,
@@ -132,7 +132,7 @@ export class ExportService {
             ],
         });
 
-        const records = commissions.map((c) => ({
+        const records = commissions.map((c: any) => ({
             date: new Date(c.createdAt).toLocaleDateString(),
             transactionRef: c.transaction.reference,
             plateNumber: c.transaction.vehicle.plateNumber,

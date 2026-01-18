@@ -195,7 +195,7 @@ export class ComplianceRenewalService {
         });
 
         for (const item of mandatoryItems) {
-            const existing = vehicle.compliance.find((c) => c.complianceItemId === item.id);
+            const existing = vehicle.compliance.find((c: any) => c.complianceItemId === item.id);
 
             if (!existing || existing.expiryDate < now || existing.status === 'EXPIRED') {
                 recommendations.push({

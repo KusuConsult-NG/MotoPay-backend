@@ -18,7 +18,7 @@ const evidenceDir = path.join(uploadsDir, 'evidence');
 
 // Storage configuration
 const storage = multer.diskStorage({
-    destination: (req: Request, file: Express.Multer.File, cb) => {
+    destination: (req: Request, _file: Express.Multer.File, cb) => {
         const uploadType = (req.body.uploadType || 'documents') as string;
         let dest = documentsDir;
 
@@ -30,14 +30,14 @@ const storage = multer.diskStorage({
 
         cb(null, dest);
     },
-    filename: (req: Request, file: Express.Multer.File, cb) => {
+    filename: (_req: Request, file: Express.Multer.File, cb) => {
         const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;
         cb(null, uniqueName);
     },
 });
 
 // File filter
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     // Allowed file types
     const allowedTypes = /jpeg|jpg|png|pdf|doc|docx/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());

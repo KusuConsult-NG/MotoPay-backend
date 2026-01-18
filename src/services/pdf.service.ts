@@ -185,7 +185,7 @@ export class PDFService {
             doc.fontSize(14).text('Compliance Status', { underline: true }).moveDown(0.5);
 
             const now = new Date();
-            vehicle.compliance.forEach((comp) => {
+            vehicle.compliance.forEach((comp: any) => {
                 const isActive = new Date(comp.expiryDate) > now && comp.status === 'ACTIVE';
 
                 doc

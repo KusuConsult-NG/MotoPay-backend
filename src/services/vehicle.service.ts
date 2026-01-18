@@ -122,9 +122,9 @@ export class VehicleService {
 
         // Categorize compliance status
         const now = new Date();
-        const active = compliance.filter((c) => c.expiryDate > now && c.status === 'ACTIVE');
-        const expired = compliance.filter((c) => c.expiryDate <= now || c.status === 'EXPIRED');
-        const pending = compliance.filter((c) => c.status === 'PENDING');
+        const active = compliance.filter((c: any) => c.expiryDate > now && c.status === 'ACTIVE');
+        const expired = compliance.filter((c: any) => c.expiryDate <= now || c.status === 'EXPIRED');
+        const pending = compliance.filter((c: any) => c.status === 'PENDING');
 
         return {
             vehicle: {

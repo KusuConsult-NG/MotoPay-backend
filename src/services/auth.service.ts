@@ -197,10 +197,10 @@ export class AuthService {
         }
 
         // Generate reset token (expires in 1 hour)
-        jwt.sign(
+        const resetToken = jwt.sign(
             { userId: user.id, email: user.email },
             config.jwt.secret,
-            { expiresIn: '1h' }
+            { expiresIn: '1h' } as jwt.SignOptions
         );
 
         // TODO: Send email with reset link

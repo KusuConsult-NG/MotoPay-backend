@@ -47,19 +47,19 @@ export class ComplianceService {
 
         // Categorize items
         const now = new Date();
-        const mandatory = requiredItems.filter((item) => item.isMandatory);
-        const optional = requiredItems.filter((item) => !item.isMandatory);
+        const mandatory = requiredItems.filter((item: any) => item.isMandatory);
+        const optional = requiredItems.filter((item: any) => !item.isMandatory);
 
         const active = existingCompliance.filter(
-            (c) => c.status === 'ACTIVE' && c.expiryDate > now
+            (c: any) => c.status === 'ACTIVE' && c.expiryDate > now
         );
 
         const expired = existingCompliance.filter(
-            (c) => c.status === 'EXPIRED' || c.expiryDate <= now
+            (c: any) => c.status === 'EXPIRED' || c.expiryDate <= now
         );
 
         const missingMandatory = mandatory.filter(
-            (item) => !existingCompliance.some((c) => c.complianceItemId === item.id)
+            (item: any) => !existingCompliance.some((c: any) => c.complianceItemId === item.id)
         );
 
         return {
