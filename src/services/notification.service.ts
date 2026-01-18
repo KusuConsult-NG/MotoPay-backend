@@ -52,54 +52,54 @@ export class NotificationService {
 
                         logger.info(`Renewal reminder sent for vehicle ${comp.vehicle.plateNumber}`);
                     } catch (error) {
-                        logger.error(error); `Reminder failed for ${comp.vehicle.plateNumber}:`, error);
-    }
-}
-      }
+                        logger.error(`Reminder failed for ${comp.vehicle.plateNumber}:`, error);
+                    }
+                }
+            }
 
-logger.info(`Renewal reminder job completed. Processed ${expiringCompliance.length} items.`);
-    });
+            logger.info(`Renewal reminder job completed. Processed ${expiringCompliance.length} items.`);
+        });
 
-logger.info('Renewal reminder scheduler started');
-  }
-
-  // Send payment confirmation
-  async sendPaymentConfirmation(transactionId: string) {
-    const transaction = await prisma.transaction.findUnique({
-        where: { id: transactionId },
-        include: {
-            vehicle: true,
-            receipt: true,
-        },
-    });
-
-    if (!transaction || !transaction.receipt) {
-        throw new Error('Transaction or receipt not found');
+        logger.info('Renewal reminder scheduler started');
     }
 
-    // Send email
-    await emailService.sendPaymentConfirmation(transaction.vehicle.ownerContact, {
-        receiptNumber: transaction.receipt.receiptNumber,
-        amount: Number(transaction.totalAmount),
-        vehiclePlate: transaction.vehicle.plateNumber,
-        transactionRef: transaction.reference,
-    });
+    // Send payment confirmation
+    async sendPaymentConfirmation(transactionId: string) {
+        const transaction = await prisma.transaction.findUnique({
+            where: { id: transactionId },
+            include: {
+                vehicle: true,
+                receipt: true,
+            },
+        });
 
-    // Send SMS
-    await smsService.sendPaymentConfirmation(
-        transaction.vehicle.ownerContact,
-        Number(transaction.totalAmount),
-        transaction.receipt.receiptNumber
-    );
+        if (!transaction || !transaction.receipt) {
+            throw new Error('Transaction or receipt not found');
+        }
 
-    // Update receipt
-    await prisma.receipt.update({
-        where: { id: transaction.receipt.id },
-        data: { emailSentAt: new Date() },
-    });
+        // Send email
+        await emailService.sendPaymentConfirmation(transaction.vehicle.ownerContact, {
+            receiptNumber: transaction.receipt.receiptNumber,
+            amount: Number(transaction.totalAmount),
+            vehiclePlate: transaction.vehicle.plateNumber,
+            transactionRef: transaction.reference,
+        });
 
-    logger.info(`Payment confirmation sent for transaction ${transaction.reference}`);
-}
+        // Send SMS
+        await smsService.sendPaymentConfirmation(
+            transaction.vehicle.ownerContact,
+            Number(transaction.totalAmount),
+            transaction.receipt.receiptNumber
+        );
+
+        // Update receipt
+        await prisma.receipt.update({
+            where: { id: transaction.receipt.id },
+            data: { emailSentAt: new Date() },
+        });
+
+        logger.info(`Payment confirmation sent for transaction ${transaction.reference}`);
+    }
 }
 
 export default new NotificationService();
