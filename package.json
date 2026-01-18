@@ -11,7 +11,7 @@
         "migrate:deploy": "prisma migrate deploy",
         "db:generate": "prisma generate",
         "db:studio": "prisma studio",
-        "test": "jest --runInBand",
+        "test": "jest --runInBand --forceExit",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
         "lint": "eslint src --ext .ts",

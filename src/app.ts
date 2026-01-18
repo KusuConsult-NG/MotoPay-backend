@@ -55,13 +55,15 @@ app.use(errorHandler);
 // Start server
 const PORT = config.port;
 
-app.listen(PORT, () => {
-    logger.info(`✓ Server started successfully`);
-    logger.info(`✓ Environment: ${config.env}`);
-    logger.info(`✓ Port: ${PORT}`);
-    logger.info(`✓ API Version: ${config.apiVersion}`);
-    logger.info(`✓ URL: http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        logger.info(`✓ Server started successfully`);
+        logger.info(`✓ Environment: ${config.env}`);
+        logger.info(`✓ Port: ${PORT}`);
+        logger.info(`✓ API Version: ${config.apiVersion}`);
+        logger.info(`✓ URL: http://localhost:${PORT}`);
+    });
+}
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
