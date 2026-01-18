@@ -26,7 +26,8 @@ export class PDFService {
             throw new AppError(404, 'Receipt not found');
         }
 
-        const fileName = `${transaction.receipt.receiptNumber}.pdf`;
+        const receipt = transaction.receipt;
+        const fileName = `${receipt.receiptNumber}.pdf`;
         const filePath = join(this.uploadsDir, fileName);
 
         return new Promise((resolve, reject) => {
@@ -46,7 +47,7 @@ export class PDFService {
             // Receipt Number
             doc
                 .fontSize(12)
-                .text(`Receipt No: ${transaction.receipt.receiptNumber}`, { align: 'right' })
+                .text(`Receipt No: ${receipt.receiptNumber}`, { align: 'right' })
                 .text(`Date: ${new Date(transaction.createdAt).toLocaleDateString()}`, { align: 'right' })
                 .moveDown();
 
