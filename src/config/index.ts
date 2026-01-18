@@ -71,19 +71,21 @@ export const config = {
     },
 };
 
-// Validate required config
-const requiredEnvVars = [
-    'DATABASE_URL',
-    'JWT_SECRET',
-    'REFRESH_TOKEN_SECRET',
-    'PAYSTACK_SECRET_KEY',
-    'ADMIN_PASSWORD',
-];
+// Validate required config (skip in test environment)
+if (process.env.NODE_ENV !== 'test') {
+    const requiredEnvVars = [
+        'DATABASE_URL',
+        'JWT_SECRET',
+        'REFRESH_TOKEN_SECRET',
+        'PAYSTACK_SECRET_KEY',
+        'ADMIN_PASSWORD',
+    ];
 
-const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
+    const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 
-if (missingVars.length > 0) {
-    throw new Error(
-        `Missing required environment variables: ${missingVars.join(', ')}`
-    );
+    if (missingVars.length > 0) {
+        throw new Error(
+            `Missing required environment variables: ${missingVars.join(', ')}`
+        );
+    }
 }

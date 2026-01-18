@@ -54,6 +54,9 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/motopay_test
           JWT_SECRET: test-secret
           REFRESH_TOKEN_SECRET: test-refresh-secret
+          PAYSTACK_SECRET_KEY: test-paystack-key
+          ADMIN_PASSWORD: test-admin-password
+          NODE_ENV: test
 
   build:
     runs-on: ubuntu-latest
