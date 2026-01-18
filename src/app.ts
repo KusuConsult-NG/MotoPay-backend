@@ -39,7 +39,7 @@ if (config.env === 'development') {
 app.use(`/api/${config.apiVersion}`, v1Routes);
 
 // Root endpoint
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
     res.json({
         success: true,
         message: 'Welcome to MotoPay API',
