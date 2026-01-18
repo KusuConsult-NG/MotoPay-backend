@@ -117,13 +117,13 @@ export class AgentService {
         ]);
 
         return {
-            totalEarnings: totalCommissions._sum.amount || 0,
+            totalEarnings: Number(totalCommissions._sum.amount || 0),
             pendingCommissions: {
-                amount: pendingCommissions._sum.amount || 0,
+                amount: Number(pendingCommissions._sum.amount || 0),
                 count: pendingCommissions._count,
             },
             paidCommissions: {
-                amount: paidCommissions._sum.amount || 0,
+                amount: Number(paidCommissions._sum.amount || 0),
                 count: paidCommissions._count,
             },
             totalTransactions,

@@ -33,7 +33,7 @@ export class AdminService {
 
         return {
             dailyCollections: {
-                amount: dailyCollections._sum.totalAmount || 0,
+                amount: Number(dailyCollections._sum.totalAmount || 0),
                 count: dailyCollections._count,
             },
             pendingValidations,
@@ -101,7 +101,12 @@ export class AdminService {
             _count: true,
         });
 
-        return transactions;
+        return transactions.map(t => ({
+            ...t,
+            _sum: {
+                totalAmount: Number(t._sum?.totalAmount || 0)
+            }
+        }));
     }
 
     async exportReport(filters: any) {

@@ -126,7 +126,7 @@ export class PaymentService {
 
             const { status, amount, paid_at, gateway_response } = response.data.data;
 
-            if (status === 'success' && amount === Math.round(transaction.totalAmount * 100)) {
+            if (status === 'success' && amount === Math.round(Number(transaction.totalAmount) * 100)) {
                 // Update transaction
                 const updated = await prisma.transaction.update({
                     where: { id: transaction.id },
@@ -177,7 +177,7 @@ export class PaymentService {
 
                 // Calculate agent commission if applicable
                 if (updated.agentId) {
-                    await this.calculateAgentCommission(updated.id, updated.agentId, updated.amount);
+                    await this.calculateAgentCommission(updated.id, updated.agentId, Number(updated.amount));
                 }
 
                 return { transaction: updated, message: 'Payment verified successfully' };
