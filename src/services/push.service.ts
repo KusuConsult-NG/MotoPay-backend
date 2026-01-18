@@ -1,5 +1,4 @@
 import admin from 'firebase-admin';
-import { config } from '../config';
 import logger from '../config/logger';
 
 // Initialize Firebase Admin (only if credentials are provided)

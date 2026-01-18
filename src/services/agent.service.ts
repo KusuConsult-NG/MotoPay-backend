@@ -1,5 +1,4 @@
 import prisma from '../config/database';
-import bcrypt from 'bcrypt';
 import { AppError, paginate, calculatePagination } from '../utils/helpers';
 
 export class AgentService {

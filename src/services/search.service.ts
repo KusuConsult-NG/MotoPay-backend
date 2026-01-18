@@ -1,5 +1,4 @@
 import prisma from '../config/database';
-import { AppError } from '../utils/helpers';
 
 export class SearchService {
     async globalSearch(query: string, filters?: {

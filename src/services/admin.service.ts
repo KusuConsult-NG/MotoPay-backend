@@ -1,5 +1,5 @@
 import prisma from '../config/database';
-import { AppError, paginate, calculatePagination } from '../utils/helpers';
+import { paginate, calculatePagination } from '../utils/helpers';
 
 export class AdminService {
     async getDashboardMetrics() {

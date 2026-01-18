@@ -1,4 +1,3 @@
-import prisma from '../config/database';
 import logger from '../config/logger';
 
 export class AuditService {
