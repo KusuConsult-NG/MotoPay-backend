@@ -17,13 +17,14 @@ export class EmailService {
     });
   }
 
-  async sendEmail(to: string, subject: string, html: string) {
+  async sendEmail(to: string, subject: string, html: string, attachments?: any[]) {
     try {
       const info = await this.transporter.sendMail({
         from: `"${config.email.fromName}" <${config.email.from}>`,
         to,
         subject,
         html,
+        attachments,
       });
 
       logger.info(`Email sent: ${info.messageId}`);
@@ -39,7 +40,7 @@ export class EmailService {
     amount: number;
     vehiclePlate: string;
     transactionRef: string;
-  }) {
+  }, pdfPath?: string) {
     const html = `
       <!DOCTYPE html>
       <html>
@@ -96,7 +97,14 @@ export class EmailService {
       </html>
     `;
 
-    return this.sendEmail(to, 'Payment Confirmation - MotoPay', html);
+    const attachments = pdfPath ? [
+      {
+        filename: `Receipt-${data.receiptNumber}.pdf`,
+        path: pdfPath,
+      }
+    ] : [];
+
+    return this.sendEmail(to, 'Payment Confirmation - MotoPay', html, attachments);
   }
 
   async sendRenewalReminder(to: string, data: {

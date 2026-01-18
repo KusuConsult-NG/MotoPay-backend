@@ -4,6 +4,8 @@ import { config } from '../config';
 import prisma from '../config/database';
 import { AppError, generateReference, calculateFee, addDays } from '../utils/helpers';
 import logger from '../config/logger';
+import emailService from './email.service';
+import pdfService from './pdf.service';
 
 export class PaymentService {
     async initializePayment(data: {
@@ -102,6 +104,7 @@ export class PaymentService {
             where: { reference },
             include: {
                 vehicle: true,
+                user: true,
             },
         });
 
@@ -141,6 +144,7 @@ export class PaymentService {
                     },
                     include: {
                         vehicle: true,
+                        user: true,
                     },
                 });
 
@@ -173,7 +177,21 @@ export class PaymentService {
                 });
 
                 // Create receipt
-                await this.createReceipt(updated.id);
+                const receipt = await this.createReceipt(updated.id);
+
+                // Generate PDF and send email
+                try {
+                    const pdfPath = await pdfService.generateReceipt(updated.id);
+                    await emailService.sendPaymentConfirmation(updated.user?.email || (updated as any).metadata?.email || '', {
+                        receiptNumber: receipt.receiptNumber,
+                        amount: Number(updated.totalAmount),
+                        vehiclePlate: updated.vehicle.plateNumber,
+                        transactionRef: updated.reference,
+                    }, pdfPath);
+                    logger.info(`Receipt email sent to ${updated.user?.email || (updated as any).metadata?.email}`);
+                } catch (emailError) {
+                    logger.error('Failed to send receipt email:', emailError);
+                }
 
                 // Calculate agent commission if applicable
                 if (updated.agentId) {
@@ -208,16 +226,41 @@ export class PaymentService {
             .digest('hex');
 
         if (hash !== signature) {
+            logger.error('Invalid webhook signature detected');
             throw new AppError(401, 'Invalid webhook signature');
         }
 
         const { event, data } = payload;
+        const eventReference = data.reference || data.id;
+
+        if (!eventReference) {
+            throw new AppError(400, 'Webhook payload missing reference');
+        }
+
+        // Check for idempotency
+        const alreadyProcessed = await prisma.processedWebhook.findUnique({
+            where: { eventReference },
+        });
+
+        if (alreadyProcessed) {
+            logger.info(`Webhook ${eventReference} already processed. Skipping.`);
+            return { message: 'Webhook already processed' };
+        }
 
         if (event === 'charge.success') {
             await this.verifyPayment(data.reference);
         }
 
-        return { message: 'Webhook processed' };
+        // Record as processed
+        await prisma.processedWebhook.create({
+            data: {
+                eventReference,
+                gateway: 'PAYSTACK',
+                eventType: event,
+            },
+        });
+
+        return { message: 'Webhook processed successfully' };
     }
 
     private async createReceipt(transactionId: string) {

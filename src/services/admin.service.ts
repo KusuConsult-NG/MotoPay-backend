@@ -110,14 +110,43 @@ export class AdminService {
     }
 
     async exportReport(filters: any) {
-        // TODO: Implement CSV/PDF export
-        const transactions = await this.getTransactions({
+        const { transactions } = await this.getTransactions({
             ...filters,
             page: 1,
-            limit: 10000, // Large limit for export
+            limit: 10000,
         });
 
-        return transactions;
+        // Generate CSV
+        const headers = [
+            'Reference',
+            'Plate Number',
+            'Amount',
+            'Fee',
+            'Total',
+            'Status',
+            'Channel',
+            'Customer Name',
+            'Date',
+        ];
+
+        const rows = transactions.map((t: any) => [
+            t.reference,
+            t.vehicle.plateNumber,
+            t.amount,
+            t.fee,
+            t.totalAmount,
+            t.status,
+            t.channel,
+            t.user?.fullName || 'N/A',
+            new Date(t.createdAt).toLocaleString(),
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map((row: any[]) => row.map((val: any) => `"${val}"`).join(',')),
+        ].join('\n');
+
+        return csvContent;
     }
 
     async verifyUser(userId: string, isVerified: boolean) {

@@ -84,13 +84,13 @@ export class AdminController {
             const filters = req.query;
             const data = await adminService.exportReport(filters);
 
-            const response: ApiResponse = {
-                success: true,
-                message: 'Report exported successfully',
-                data,
-            };
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader(
+                'Content-Disposition',
+                `attachment; filename=report-${Date.now()}.csv`
+            );
 
-            return res.json(response);
+            return res.send(data);
         } catch (error) {
             return next(error);
         }

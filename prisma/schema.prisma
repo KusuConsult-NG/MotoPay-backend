@@ -284,3 +284,14 @@ model PriceHistory {
 
   @@map("price_history")
 }
+
+model ProcessedWebhook {
+  id                 String   @id @default(uuid())
+  eventReference     String   @unique @map("event_reference")
+  gateway            PaymentGateway
+  eventType          String   @map("event_type")
+  processedAt        DateTime @default(now()) @map("processed_at")
+
+  @@index([eventReference])
+  @@map("processed_webhooks")
+}
