@@ -51,7 +51,7 @@ export class ComplianceRenewalService {
             }
 
             // Create new compliance record
-            const renewed = await prisma.vehicleCompliance.create({
+            await prisma.vehicleCompliance.create({
                 data: {
                     vehicleId,
                     complianceItemId: itemId,

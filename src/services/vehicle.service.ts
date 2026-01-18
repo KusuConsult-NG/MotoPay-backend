@@ -6,7 +6,7 @@ export class VehicleService {
     async lookupVehicle(query: VehicleLookupQuery) {
         const { tin, plateNumber, chassisNumber } = query;
 
-        let whereClause: any = {};
+        const whereClause: any = {};
 
         if (tin) {
             if (!validateTIN(tin)) {

@@ -79,7 +79,7 @@ export class ExceptionService {
     }
 
     async assignException(id: string, assignedTo: string) {
-        const exception = await this.getExceptionById(id);
+        await this.getExceptionById(id);
 
         const updated = await prisma.exception.update({
             where: { id },
@@ -93,7 +93,7 @@ export class ExceptionService {
     }
 
     async updateExceptionStatus(id: string, status: string) {
-        const exception = await this.getExceptionById(id);
+        await this.getExceptionById(id);
 
         const updated = await prisma.exception.update({
             where: { id },
@@ -104,7 +104,7 @@ export class ExceptionService {
     }
 
     async resolveException(id: string, resolutionNotes: string) {
-        const exception = await this.getExceptionById(id);
+        await this.getExceptionById(id);
 
         const updated = await prisma.exception.update({
             where: { id },
