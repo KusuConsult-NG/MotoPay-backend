@@ -14,9 +14,9 @@ export class ExceptionController {
                 data: exception,
             };
 
-            res.status(201).json(response);
+            return res.status(201).json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 

@@ -15,9 +15,9 @@ export class AgentController {
                 data: agent,
             };
 
-            res.status(201).json(response);
+            return res.status(201).json(response);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
@@ -116,9 +116,9 @@ export class AgentController {
 
             res.setHeader('Content-Type', 'text/csv');
             res.setHeader('Content-Disposition', `attachment; filename=commissions-${Date.now()}.csv`);
-            res.send(csv);
+            return res.send(csv);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 }

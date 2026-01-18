@@ -55,9 +55,9 @@ export class PaymentController {
 
             const result = await paymentService.handleWebhook(req.body, signature);
 
-            res.json(result);
+            return res.json(result);
         } catch (error) {
-            next(error);
+            return next(error);
         }
     }
 
