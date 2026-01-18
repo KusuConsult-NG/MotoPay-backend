@@ -76,11 +76,11 @@ export class AuthService {
 
         const accessToken = jwt.sign(tokenPayload, config.jwt.secret, {
             expiresIn: config.jwt.expiresIn,
-        });
+        } as jwt.SignOptions);
 
         const refreshToken = jwt.sign(tokenPayload, config.jwt.refreshSecret, {
             expiresIn: config.jwt.refreshExpiresIn,
-        });
+        } as jwt.SignOptions);
 
         // Store refresh token
         const expiresAt = addDays(new Date(), 7);
@@ -146,7 +146,7 @@ export class AuthService {
 
             const accessToken = jwt.sign(tokenPayload, config.jwt.secret, {
                 expiresIn: config.jwt.expiresIn,
-            });
+            } as jwt.SignOptions);
 
             return { accessToken };
         } catch (error) {
