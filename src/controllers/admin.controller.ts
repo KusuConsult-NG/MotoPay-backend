@@ -95,6 +95,44 @@ export class AdminController {
             return next(error);
         }
     }
+
+    async verifyUser(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { isVerified } = req.body;
+
+            const user = await adminService.verifyUser(id, isVerified);
+
+            const response: ApiResponse = {
+                success: true,
+                message: `User verification status updated to ${isVerified}`,
+                data: user,
+            };
+
+            return res.json(response);
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+    async verifyVehicle(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { tinVerified } = req.body;
+
+            const vehicle = await adminService.verifyVehicle(id, tinVerified);
+
+            const response: ApiResponse = {
+                success: true,
+                message: `Vehicle TIN verification status updated to ${tinVerified}`,
+                data: vehicle,
+            };
+
+            return res.json(response);
+        } catch (error) {
+            return next(error);
+        }
+    }
 }
 
 export default new AdminController();

@@ -34,6 +34,7 @@ export interface RegisterData {
     password: string;
     fullName: string;
     phoneNumber?: string;
+    nin?: string;
 }
 
 export interface VehicleLookupQuery {

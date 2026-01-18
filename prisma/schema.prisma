@@ -87,6 +87,8 @@ model User {
   role              UserRole            @default(PUBLIC)
   agentId           String?             @unique @map("agent_id")
   isActive          Boolean             @default(true) @map("is_active")
+  nin               String?             @unique
+  isVerified        Boolean             @default(false) @map("is_verified")
   lastLogin         DateTime?           @map("last_login")
   createdAt         DateTime            @default(now()) @map("created_at")
   updatedAt         DateTime            @updatedAt @map("updated_at")
@@ -129,6 +131,7 @@ model Vehicle {
   registrationDate  DateTime           @default(now()) @map("registration_date")
   lastRenewalDate   DateTime?          @map("last_renewal_date")
   status            VehicleStatus      @default(ACTIVE)
+  tinVerified       Boolean            @default(false) @map("tin_verified")
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
   

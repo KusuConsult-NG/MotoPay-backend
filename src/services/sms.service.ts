@@ -3,27 +3,63 @@ import { config } from '../config';
 import logger from '../config/logger';
 
 export class SMSService {
-    private apiUrl = 'https://api.twilio.com/2010-04-01';
+    private async sendTwilioSMS(to: string, message: string) {
+        const apiUrl = 'https://api.twilio.com/2010-04-01';
+        const { twilioAccountSid, twilioAuthToken, twilioPhoneNumber } = config.sms;
+
+        if (!twilioAccountSid || !twilioAuthToken) {
+            throw new Error('Twilio configuration missing');
+        }
+
+        const response = await axios.post(
+            `${apiUrl}/Accounts/${twilioAccountSid}/Messages.json`,
+            new URLSearchParams({
+                To: to,
+                From: twilioPhoneNumber!,
+                Body: message,
+            }),
+            {
+                auth: {
+                    username: twilioAccountSid,
+                    password: twilioAuthToken,
+                },
+            }
+        );
+        return response.data;
+    }
+
+    private async sendTermiiSMS(to: string, message: string) {
+        // Termii implementation
+        const { termiiApiKey, termiiSenderId } = config.sms;
+
+        if (!termiiApiKey) {
+            throw new Error('Termii configuration missing');
+        }
+
+        const response = await axios.post('https://api.ng.termii.com/api/sms/send', {
+            to,
+            from: termiiSenderId || 'MotoPay',
+            sms: message,
+            type: 'plain',
+            channel: 'generic',
+            api_key: termiiApiKey,
+        });
+        return response.data;
+    }
 
     async sendSMS(to: string, message: string) {
         try {
-            const response = await axios.post(
-                `${this.apiUrl}/Accounts/${config.sms.twilioAccountSid}/Messages.json`,
-                new URLSearchParams({
-                    To: to,
-                    From: config.sms.twilioPhoneNumber,
-                    Body: message,
-                }),
-                {
-                    auth: {
-                        username: config.sms.twilioAccountSid,
-                        password: config.sms.twilioAuthToken,
-                    },
-                }
-            );
+            const provider = process.env.SMS_PROVIDER || 'TWILIO';
+            let result;
 
-            logger.info(`SMS sent to ${to}: ${response.data.sid}`);
-            return response.data;
+            if (provider === 'TERMII') {
+                result = await this.sendTermiiSMS(to, message);
+            } else {
+                result = await this.sendTwilioSMS(to, message);
+            }
+
+            logger.info(`SMS sent to ${to} via ${provider}`);
+            return result;
         } catch (error: any) {
             logger.error('SMS sending failed:', error.response?.data || error.message);
             throw error;

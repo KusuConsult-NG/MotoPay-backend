@@ -4,6 +4,8 @@ import { config } from '../config';
 import prisma from '../config/database';
 import { AppError, addDays } from '../utils/helpers';
 import { LoginCredentials, RegisterData, TokenPayload } from '../types';
+import emailService from './email.service';
+import identityService from './identity.service';
 
 export class AuthService {
     private readonly SALT_ROUNDS = 12;
@@ -21,6 +23,16 @@ export class AuthService {
         // Hash password
         const passwordHash = await bcrypt.hash(data.password, this.SALT_ROUNDS);
 
+        // Verify NIN if provided
+        let isVerified = false;
+        if (data.nin) {
+            const verification = await identityService.verifyNIN(data.nin);
+            if (!verification.success) {
+                throw new AppError(400, verification.error || 'NIN verification failed');
+            }
+            isVerified = true;
+        }
+
         // Create user
         const user = await prisma.user.create({
             data: {
@@ -28,6 +40,8 @@ export class AuthService {
                 passwordHash,
                 fullName: data.fullName,
                 phoneNumber: data.phoneNumber,
+                nin: data.nin,
+                isVerified,
                 role: 'PUBLIC',
             },
             select: {
@@ -197,14 +211,14 @@ export class AuthService {
         }
 
         // Generate reset token (expires in 1 hour)
-        jwt.sign(
+        const resetToken = jwt.sign(
             { userId: user.id, email: user.email },
             config.jwt.secret,
             { expiresIn: '1h' } as jwt.SignOptions
         );
 
-        // TODO: Send email with reset link
-        // await emailService.sendPasswordResetEmail(user.email, resetToken);
+        // Send email with reset link
+        await emailService.sendPasswordReset(user.email, resetToken);
 
         return { message: 'If the email exists, a reset link will be sent' };
     }

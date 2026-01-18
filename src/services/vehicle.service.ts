@@ -1,6 +1,7 @@
 import prisma from '../config/database';
 import { AppError, validatePlateNumber, validateVIN, validateTIN } from '../utils/helpers';
 import { VehicleLookupQuery } from '../types';
+import identityService from './identity.service';
 
 export class VehicleService {
     async lookupVehicle(query: VehicleLookupQuery) {
@@ -60,11 +61,22 @@ export class VehicleService {
             throw new AppError(409, 'Vehicle with this plate number or chassis number already exists');
         }
 
+        // Verify TIN if provided
+        let tinVerified = false;
+        if (data.tin) {
+            const verification = await identityService.verifyTIN(data.tin);
+            if (!verification.success) {
+                throw new AppError(400, verification.error || 'TIN verification failed');
+            }
+            tinVerified = true;
+        }
+
         const vehicle = await prisma.vehicle.create({
             data: {
                 ...data,
                 plateNumber: data.plateNumber.toUpperCase(),
                 chassisNumber: data.chassisNumber.toUpperCase(),
+                tinVerified,
             },
         });
 

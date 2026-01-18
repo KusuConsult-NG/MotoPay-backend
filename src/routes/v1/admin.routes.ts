@@ -12,4 +12,8 @@ router.get('/transactions', adminController.getTransactions);
 router.get('/collections', adminController.getCollections);
 router.post('/export', adminController.exportReport);
 
+// Verification Overrides
+router.patch('/verify/user/:id', adminController.verifyUser);
+router.patch('/verify/vehicle/:id', adminController.verifyVehicle);
+
 export default router;

@@ -119,6 +119,28 @@ export class AdminService {
 
         return transactions;
     }
+
+    async verifyUser(userId: string, isVerified: boolean) {
+        return prisma.user.update({
+            where: { id: userId },
+            data: { isVerified },
+            select: { id: true, email: true, fullName: true, isVerified: true },
+        });
+    }
+
+    async verifyVehicle(vehicleId: string, tinVerified: boolean) {
+        return prisma.vehicle.update({
+            where: { id: vehicleId },
+            data: { tinVerified },
+            include: {
+                compliance: {
+                    include: {
+                        complianceItem: true,
+                    },
+                },
+            },
+        });
+    }
 }
 
 export default new AdminService();

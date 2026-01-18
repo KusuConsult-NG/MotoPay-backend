@@ -39,9 +39,11 @@ export const config = {
     },
 
     sms: {
-        twilioAccountSid: process.env.TWILIO_ACCOUNT_SID!,
-        twilioAuthToken: process.env.TWILIO_AUTH_TOKEN!,
-        twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER!,
+        twilioAccountSid: process.env.TWILIO_ACCOUNT_SID,
+        twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
+        twilioPhoneNumber: process.env.TWILIO_PHONE_NUMBER,
+        termiiApiKey: process.env.TERMII_API_KEY,
+        termiiSenderId: process.env.TERMII_SENDER_ID || 'MotoPay',
     },
 
     aws: {
