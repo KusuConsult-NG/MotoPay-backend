@@ -86,7 +86,7 @@ export const optionalAuth = async (
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
         try {
-            await authenticate(req, res, next);
+            await authenticate(req, _res, next);
         } catch (error) {
             // Continue without auth if token is invalid
             next();
