@@ -30,8 +30,10 @@
     "license": "ISC",
     "dependencies": {
         "@prisma/client": "^5.22.0",
+        "@types/better-sqlite3": "^7.6.13",
         "axios": "^1.6.2",
         "bcrypt": "^5.1.1",
+        "better-sqlite3": "^11.0.0",
         "cors": "^2.8.5",
         "csurf": "^1.11.0",
         "csv-writer": "^1.6.0",
