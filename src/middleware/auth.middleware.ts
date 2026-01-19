@@ -85,13 +85,30 @@ export const optionalAuth = async (
     const authHeader = req.headers.authorization;
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+
         try {
-            await authenticate(req, _res, next);
+            const decoded = jwt.verify(token, config.jwt.secret) as TokenPayload;
+
+            // Verify user still exists and is active
+            const user = await prisma.user.findUnique({
+                where: { id: decoded.userId },
+                select: { id: true, email: true, role: true, isActive: true },
+            });
+
+            if (user && user.isActive) {
+                req.user = {
+                    id: user.id,
+                    userId: user.id,
+                    email: user.email,
+                    role: user.role,
+                };
+            }
         } catch (error) {
             // Continue without auth if token is invalid
-            return next();
+            // No need to do anything, just continue
         }
-    } else {
-        return next();
     }
+
+    return next();
 };

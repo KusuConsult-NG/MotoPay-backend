@@ -12,9 +12,9 @@ export class SearchService {
             results.vehicles = await prisma.vehicle.findMany({
                 where: {
                     OR: [
-                        { plateNumber: { contains: query, mode: 'insensitive' } },
-                        { chassisNumber: { contains: query, mode: 'insensitive' } },
-                        { ownerName: { contains: query, mode: 'insensitive' } },
+                        { plateNumber: { contains: query } },
+                        { chassisNumber: { contains: query } },
+                        { ownerName: { contains: query } },
                         { tin: { contains: query } },
                     ],
                 },
@@ -25,7 +25,7 @@ export class SearchService {
         if (!filters?.type || filters.type === 'transaction') {
             results.transactions = await prisma.transaction.findMany({
                 where: {
-                    reference: { contains: query, mode: 'insensitive' },
+                    reference: { contains: query },
                 },
                 include: {
                     vehicle: true,
@@ -38,9 +38,9 @@ export class SearchService {
             results.users = await prisma.user.findMany({
                 where: {
                     OR: [
-                        { email: { contains: query, mode: 'insensitive' } },
-                        { fullName: { contains: query, mode: 'insensitive' } },
-                        { agentId: { contains: query, mode: 'insensitive' } },
+                        { email: { contains: query } },
+                        { fullName: { contains: query } },
+                        { agentId: { contains: query } },
                     ],
                 },
                 select: {
@@ -68,7 +68,7 @@ export class SearchService {
         const where: any = {};
 
         if (filters.vehicleType) where.vehicleType = filters.vehicleType;
-        if (filters.make) where.make = { contains: filters.make, mode: 'insensitive' };
+        if (filters.make) where.make = { contains: filters.make };
         if (filters.status) where.status = filters.status;
 
         if (filters.yearFrom || filters.yearTo) {

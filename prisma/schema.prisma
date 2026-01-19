@@ -5,77 +5,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum UserRole {
-  PUBLIC
-  AGENT
-  ADMIN
-  SUPER_ADMIN
-}
-
-enum VehicleType {
-  PRIVATE
-  COMMERCIAL
-  TRUCK
-  MOTORCYCLE
-  TRICYCLE
-}
-
-enum VehicleStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-}
-
-enum ComplianceStatus {
-  ACTIVE
-  EXPIRED
-  PENDING
-}
-
-enum TransactionStatus {
-  PENDING
-  SUCCESS
-  FAILED
-  REFUNDED
-}
-
-enum PaymentMethod {
-  CARD
-  USSD
-  BANK_TRANSFER
-}
-
-enum PaymentGateway {
-  PAYSTACK
-  FLUTTERWAVE
-}
-
-enum TransactionChannel {
-  SELF
-  AGENT
-}
-
-enum ExceptionType {
-  VEHICLE_NOT_FOUND
-  DUPLICATE
-  DOCUMENT_MISMATCH
-  OTHER
-}
-
-enum ExceptionStatus {
-  PENDING
-  IN_PROGRESS
-  RESOLVED
-  REJECTED
-}
-
-enum CommissionStatus {
-  PENDING
-  PAID
 }
 
 model User {
@@ -84,7 +15,7 @@ model User {
   passwordHash      String              @map("password_hash")
   phoneNumber       String?             @map("phone_number")
   fullName          String              @map("full_name")
-  role              UserRole            @default(PUBLIC)
+  role              String              @default("PUBLIC") // Enum: PUBLIC, AGENT, ADMIN, SUPER_ADMIN
   agentId           String?             @unique @map("agent_id")
   isActive          Boolean             @default(true) @map("is_active")
   nin               String?             @unique
@@ -125,12 +56,12 @@ model Vehicle {
   make              String
   model             String
   year              Int
-  vehicleType       VehicleType        @map("vehicle_type")
+  vehicleType       String             @map("vehicle_type") // Enum: PRIVATE, COMMERCIAL, TRUCK, MOTORCYCLE, TRICYCLE
   ownerName         String             @map("owner_name")
   ownerContact      String             @map("owner_contact")
   registrationDate  DateTime           @default(now()) @map("registration_date")
   lastRenewalDate   DateTime?          @map("last_renewal_date")
-  status            VehicleStatus      @default(ACTIVE)
+  status            String             @default("ACTIVE") // Enum: ACTIVE, INACTIVE, SUSPENDED
   tinVerified       Boolean            @default(false) @map("tin_verified")
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
@@ -149,8 +80,8 @@ model ComplianceItem {
   id                    String              @id @default(uuid())
   name                  String
   description           String
-  vehicleCategory       VehicleType         @map("vehicle_category")
-  price                 Decimal             @db.Decimal(10, 2)
+  vehicleCategory       String              @map("vehicle_category") // Enum like VehicleType
+  price                 Float
   isMandatory           Boolean             @default(false) @map("is_mandatory")
   validityPeriodDays    Int                 @map("validity_period_days")
   isLocked              Boolean             @default(false) @map("is_locked")
@@ -169,7 +100,7 @@ model VehicleCompliance {
   id                String            @id @default(uuid())
   vehicleId         String            @map("vehicle_id")
   complianceItemId  String            @map("compliance_item_id")
-  status            ComplianceStatus
+  status            String            // Enum: ACTIVE, EXPIRED, PENDING
   issueDate         DateTime          @map("issue_date")
   expiryDate        DateTime          @map("expiry_date")
   certificateUrl    String?           @map("certificate_url")
@@ -188,16 +119,16 @@ model Transaction {
   reference         String              @unique
   userId            String?             @map("user_id")
   vehicleId         String              @map("vehicle_id")
-  amount            Decimal             @db.Decimal(10, 2)
-  fee               Decimal             @db.Decimal(10, 2)
-  totalAmount       Decimal             @map("total_amount") @db.Decimal(10, 2)
-  paymentMethod     PaymentMethod       @map("payment_method")
-  paymentGateway    PaymentGateway      @map("payment_gateway")
+  amount            Float
+  fee               Float
+  totalAmount       Float               @map("total_amount")
+  paymentMethod     String              @map("payment_method") // Enum: CARD, USSD, BANK_TRANSFER
+  paymentGateway    String              @map("payment_gateway") // Enum: PAYSTACK, FLUTTERWAVE
   paymentReference  String?             @map("payment_reference")
-  status            TransactionStatus
-  channel           TransactionChannel
+  status            String              // Enum: PENDING, SUCCESS, FAILED, REFUNDED
+  channel           String              // Enum: SELF, AGENT
   agentId           String?             @map("agent_id")
-  metadata          Json?
+  metadata          String?             // JSON string
   createdAt         DateTime            @default(now()) @map("created_at")
   updatedAt         DateTime            @updatedAt @map("updated_at")
   
@@ -231,9 +162,9 @@ model AgentCommission {
   id              String            @id @default(uuid())
   agentId         String            @map("agent_id")
   transactionId   String            @unique @map("transaction_id")
-  percentage      Decimal           @db.Decimal(5, 2)
-  amount          Decimal           @db.Decimal(10, 2)
-  status          CommissionStatus
+  percentage      Float
+  amount          Float
+  status          String            // Enum: PENDING, PAID
   paidAt          DateTime?         @map("paid_at")
   createdAt       DateTime          @default(now()) @map("created_at")
   
@@ -247,14 +178,14 @@ model AgentCommission {
 model Exception {
   id                  String          @id @default(uuid())
   ticketNumber        String          @unique @map("ticket_number")
-  type                ExceptionType
-  userSubmittedData   Json            @map("user_submitted_data")
+  type                String          // Enum: VEHICLE_NOT_FOUND, DUPLICATE, DOCUMENT_MISMATCH, OTHER
+  userSubmittedData   String          @map("user_submitted_data") // JSON string
   plateNumber         String?         @map("plate_number")
   chassisNumber       String?         @map("chassis_number")
-  status              ExceptionStatus
+  status              String          // Enum: PENDING, IN_PROGRESS, RESOLVED, REJECTED
   assignedTo          String?         @map("assigned_to")
   resolutionNotes     String?         @map("resolution_notes")
-  evidenceUrls        Json?           @map("evidence_urls")
+  evidenceUrls        String?         @map("evidence_urls") // JSON string
   createdAt           DateTime        @default(now()) @map("created_at")
   updatedAt           DateTime        @updatedAt @map("updated_at")
   resolvedAt          DateTime?       @map("resolved_at")
@@ -270,8 +201,8 @@ model Exception {
 model PriceHistory {
   id                String          @id @default(uuid())
   complianceItemId  String          @map("compliance_item_id")
-  oldPrice          Decimal         @map("old_price") @db.Decimal(10, 2)
-  newPrice          Decimal         @map("new_price") @db.Decimal(10, 2)
+  oldPrice          Float           @map("old_price")
+  newPrice          Float           @map("new_price")
   changedBy         String          @map("changed_by")
   reason            String
   approvedBy        String?         @map("approved_by")
@@ -288,7 +219,7 @@ model PriceHistory {
 model ProcessedWebhook {
   id                 String   @id @default(uuid())
   eventReference     String   @unique @map("event_reference")
-  gateway            PaymentGateway
+  gateway            String   // Enum like PaymentGateway
   eventType          String   @map("event_type")
   processedAt        DateTime @default(now()) @map("processed_at")
 

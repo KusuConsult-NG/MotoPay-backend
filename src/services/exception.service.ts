@@ -15,11 +15,11 @@ export class ExceptionService {
             data: {
                 ticketNumber,
                 type: data.type as any,
-                userSubmittedData: data.userSubmittedData,
+                userSubmittedData: JSON.stringify(data.userSubmittedData),
                 plateNumber: data.plateNumber?.toUpperCase(),
                 chassisNumber: data.chassisNumber?.toUpperCase(),
                 status: 'PENDING',
-                evidenceUrls: data.evidenceUrls || [],
+                evidenceUrls: JSON.stringify(data.evidenceUrls || []),
             },
         });
 
