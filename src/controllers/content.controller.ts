@@ -1,31 +1,23 @@
 import type { Request, Response } from 'express';
-import Database from 'better-sqlite3';
-import path from 'path';
-
-// Initialize SQLite database
-const dbPath = path.join(__dirname, '../../prisma/dev.db');
-const db = new Database(dbPath);
+import prisma from '../config/database';
 
 /**
  * Content Controller
  * Handles dynamic content for Services, About, and Help pages
- * Uses raw SQL queries to bypass Prisma client generation issues
  */
 
 // GET /api/v1/content/services
 export const getServices = async (_req: Request, res: Response) => {
     try {
-        const services = db.prepare(`
-            SELECT * FROM services 
-            WHERE isActive = 1 
-            ORDER BY "order" ASC
-        `).all();
+        const services = await prisma.service.findMany({
+            where: { isActive: true },
+            orderBy: { order: 'asc' },
+        });
 
         // Parse JSON features string back to array
-        const parsedServices = services.map((service: any) => ({
+        const parsedServices = services.map(service => ({
             ...service,
             features: JSON.parse(service.features),
-            isActive: Boolean(service.isActive),
         }));
 
         return res.json({
@@ -44,17 +36,15 @@ export const getServices = async (_req: Request, res: Response) => {
 // GET /api/v1/content/about
 export const getAboutSections = async (_req: Request, res: Response) => {
     try {
-        const sections = db.prepare(`
-            SELECT * FROM about_sections 
-            WHERE isActive = 1 
-            ORDER BY "order" ASC
-        `).all();
+        const sections = await prisma.aboutSection.findMany({
+            where: { isActive: true },
+            orderBy: { order: 'asc' },
+        });
 
         // Parse JSON items string back to array
-        const parsedSections = sections.map((section: any) => ({
+        const parsedSections = sections.map(section => ({
             ...section,
             items: section.items ? JSON.parse(section.items) : null,
-            isActive: Boolean(section.isActive),
         }));
 
         return res.json({
@@ -75,30 +65,17 @@ export const getFAQs = async (req: Request, res: Response) => {
     try {
         const { category } = req.query;
 
-        let faqs;
-        if (category) {
-            faqs = db.prepare(`
-                SELECT * FROM faqs 
-                WHERE isActive = 1 AND category = ?
-                ORDER BY "order" ASC
-            `).all(category);
-        } else {
-            faqs = db.prepare(`
-                SELECT * FROM faqs 
-                WHERE isActive = 1 
-                ORDER BY "order" ASC
-            `).all();
-        }
-
-        // Convert isActive to boolean
-        const parsedFaqs = faqs.map((faq: any) => ({
-            ...faq,
-            isActive: Boolean(faq.isActive),
-        }));
+        const faqs = await prisma.fAQ.findMany({
+            where: {
+                isActive: true,
+                ...(category && { category: category as string }),
+            },
+            orderBy: { order: 'asc' },
+        });
 
         return res.json({
             success: true,
-            data: parsedFaqs,
+            data: faqs,
         });
     } catch (error) {
         console.error('Error fetching FAQs:', error);
@@ -112,21 +89,14 @@ export const getFAQs = async (req: Request, res: Response) => {
 // GET /api/v1/content/help-categories
 export const getHelpCategories = async (_req: Request, res: Response) => {
     try {
-        const categories = db.prepare(`
-            SELECT * FROM help_categories 
-            WHERE isActive = 1 
-            ORDER BY "order" ASC
-        `).all();
-
-        // Convert isActive to boolean
-        const parsedCategories = categories.map((category: any) => ({
-            ...category,
-            isActive: Boolean(category.isActive),
-        }));
+        const categories = await prisma.helpCategory.findMany({
+            where: { isActive: true },
+            orderBy: { order: 'asc' },
+        });
 
         return res.json({
             success: true,
-            data: parsedCategories,
+            data: categories,
         });
     } catch (error) {
         console.error('Error fetching help categories:', error);
