@@ -1,409 +1,264 @@
-# MotoPay Backend Deployment Guide
+# MotoPay Backend - Production Deployment Guide
+
+## Overview
+This guide covers deploying the MotoPay backend API to Vercel with proper database and environment configuration.
 
 ## Prerequisites
+- Vercel account
+- Database solution (Vercel Postgres recommended)
+- Paystack account with live API keys
+- SendGrid account for email
 
-- Node.js 18+
-- PostgreSQL 14+
-- Redis (optional, for caching)
-- Domain name with SSL certificate
-- Environment variables configured
+## Environment Variables
 
----
+Set these in your Vercel project settings (**Settings → Environment Variables**):
 
-## Option 1: Railway Deployment (Recommended)
+### Required Variables
 
-Railway offers the easiest deployment with automatic Prisma support.
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `DATABASE_URL` | `postgresql://...` or `file:./prod.db` | Database connection string |
+| `FRONTEND_URL` | `https://moto-pay.vercel.app` | Frontend URL for CORS |
+| `JWT_SECRET` | Strong random string | JWT signing secret |
+| `REFRESH_TOKEN_SECRET` | Strong random string | Refresh token secret |
+| `PAYSTACK_SECRET_KEY` | `sk_live_...` | Paystack secret key (live) |
+| `PAYSTACK_PUBLIC_KEY` | `pk_live_...` | Paystack public key (live) |
+| `SENDGRID_API_KEY` | Your SendGrid key | Email service API key |
+| `EMAIL_FROM` | `noreply@motopay.pl.gov.ng` | Sender email address |
+| `ADMIN_EMAIL` | `admin@psirs.gov.ng` | Admin login email |
+| `ADMIN_PASSWORD` | Strong password | Admin login password |
 
-### Steps:
+### Optional Variables
 
-1. **Install Railway CLI**
-   ```bash
-   npm install -g @railway/cli
-   railway login
-   ```
+| Variable | Value | Default | Description |
+|----------|-------|---------|-------------|
+| `NODE_ENV` | `production` | `development` | Environment mode |
+| `PORT` | `5000` | `5000` | Server port |
+| `API_VERSION` | `v1` | `v1` | API version |
 
-2. **Initialize Project**
-   ```bash
-   railway init
-   ```
+## Database Setup
 
-3. **Add PostgreSQL**
-   ```bash
-   railway add
-   # Select PostgreSQL
-   ```
+### Option 1: Vercel Postgres (Recommended)
 
-4. **Set Environment Variables**
-   ```bash
-   railway variables set JWT_SECRET=your-secret
-   railway variables set REFRESH_TOKEN_SECRET=your-refresh-secret
-   railway variables set PAYSTACK_SECRET_KEY=your-paystack-key
-   railway variables set SENDGRID_API_KEY=your-sendgrid-key
-   ```
+1. Go to your project dashboard
+2. Click **Storage** → **Create Database**
+3. Select **Postgres**
+4. Copy the `DATABASE_URL` from dashboard
+5. Add to environment variables
 
-5. **Deploy**
-   ```bash
-   railway up
-   ```
+### Option 2: External PostgreSQL
 
-6. **Run Migrations**
-   ```bash
-   railway run npx prisma migrate deploy
-   ```
+Use any PostgreSQL provider (Railway, Supabase, etc.):
 
-7. **Get Domain**
-   ```bash
-   railway domain
-   ```
-
-Your API will be live at the provided URL!
-
----
-
-## Option 2: Heroku Deployment
-
-### Steps:
-
-1. **Install Heroku CLI**
-   ```bash
-   npm install -g heroku
-   heroku login
-   ```
-
-2. **Create App**
-   ```bash
-   heroku create motopay-api
-   ```
-
-3. **Add PostgreSQL**
-   ```bash
-   heroku addons:create heroku-postgresql:mini
-   ```
-
-4. **Set Buildpacks**
-   ```bash
-   heroku buildpacks:add heroku/nodejs
-   ```
-
-5. **Set Environment Variables**
-   ```bash
-   heroku config:set JWT_SECRET=your-secret
-   heroku config:set REFRESH_TOKEN_SECRET=your-refresh-secret
-   heroku config:set PAYSTACK_SECRET_KEY=your-paystack-key
-   heroku config:set SENDGRID_API_KEY=your-sendgrid-key
-   heroku config:set NODE_ENV=production
-   ```
-
-6. **Add Release Command** (in `Procfile`):
-   ```
-   release: npx prisma migrate deploy
-   web: npm start
-   ```
-
-7. **Deploy**
-   ```bash
-   git push heroku main
-   ```
-
-8. **Scale Dynos**
-   ```bash
-   heroku ps:scale web=1
-   ```
-
----
-
-## Option 3: Docker Deployment
-
-### Local Docker
-
-1. **Build Image**
-   ```bash
-   docker build -t motopay-api .
-   ```
-
-2. **Run with Docker Compose**
-   ```bash
-   docker-compose up -d
-   ```
-
-3 **Check Logs**
-   ```bash
-   docker-compose logs -f api
-   ```
-
-### Production Docker
-
-1. **Use Docker Registry**
-   ```bash
-   docker tag motopay-api your-registry.com/motopay-api:latest
-   docker push your-registry.com/motopay-api:latest
-   ```
-
-2. **Deploy to Cloud**
-   - AWS ECS
-   - Google Cloud Run
-   - Azure Container Instances
-   - DigitalOcean App Platform
-
----
-
-## Option 4: VPS Deployment (Ubuntu)
-
-### Setup:
-
-1. **SSH into Server**
-   ```bash
-   ssh user@your-server-ip
-   ```
-
-2. **Install Dependencies**
-   ```bash
-   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-   sudo apt-get install -y nodejs postgresql nginx
-   ```
-
-3. **Clone Repository**
-   ```bash
-   git clone https://github.com/KusuConsult-NG/MotoPay-backend.git
-   cd MotoPay-backend
-   ```
-
-4. **Install Node Modules**
-   ```bash
-   npm ci --only=production
-   ```
-
-5. **Create .env File**
-   ```bash
-   nano .env
-   # Add all environment variables
-   ```
-
-6. **Setup PostgreSQL**
-   ```bash
-   sudo -u postgres createdb motopay
-   sudo -u postgres psql motopay -c "ALTER USER postgres WITH PASSWORD 'your-password';"
-   ```
-
-7. **Run Migrations**
-   ```bash
-   npx prisma migrate deploy
-   ```
-
-8. **Build Application**
-   ```bash
-   npm run build
-   ```
-
-9. **Setup PM2**
-   ```bash
-   sudo npm install -g pm2
-   pm2 start dist/app.js --name motopay-api
-   pm2 save
-   pm2 startup
-   ```
-
-10. **Configure Nginx**
-    ```bash
-    sudo nano /etc/nginx/sites-available/motopay
-    ```
-    
-    Add:
-    ```nginx
-    server {
-        listen 80;
-        server_name api.motopay.pl.gov.ng;
-
-        location / {
-            proxy_pass http://localhost:5000;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
-        }
-    }
-    ```
-
-11. **Enable Site**
-    ```bash
-    sudo ln -s /etc/nginx/sites-available/motopay /etc/nginx/sites-enabled/
-    sudo nginx -t
-    sudo systemctl restart nginx
-    ```
-
-12. **Setup SSL**
-    ```bash
-    sudo apt-get install certbot python3-certbot-nginx
-    sudo certbot --nginx -d api.motopay.pl.gov.ng
-    ```
-
----
-
-## Option 5: Render Deployment
-
-1. **Connect GitHub**
-   - Go to render.com
-   - Connect your GitHub repository
-
-2. **Create Web Service**
-   - Build Command: `npm install && npx prisma generate && npm run build`
-   - Start Command: `npm start`
-
-3. **Add PostgreSQL**
-   - Create PostgreSQL database in Render
-   - Copy DATABASE_URL
-
-4. **Set Environment Variables**
-   - Add all required variables in Render dashboard
-
-5. **Deploy**
-   - Render auto-deploys on push to main branch
-
----
-
-## Post-Deployment Checklist
-
-- [ ] Database migrations applied
-- [ ] Environment variables set
-- [ ] SSL certificate configured
-- [ ] Health check endpoint responding
-- [ ] Swagger documentation accessible
-- [ ] Payment webhook configured
-- [ ] Monitoring setup (optional)
-- [ ] Backup strategy configured
-- [ ] Rate limiting active
-- [ ] CORS configured correctly
-
----
-
-## Environment Variables Checklist
-
-```env
-# Core
-NODE_ENV=production
-PORT=5000
-API_VERSION=v1
-BASE_URL=https://api.motopay.pl.gov.ng
-FRONTEND_URL=https://motopay.pl.gov.ng
-
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/motopay
-
-# Security
-JWT_SECRET=your-super-secret-jwt-key
-REFRESH_TOKEN_SECRET=your-refresh-token-secret
-
-# Payment
-PAYSTACK_SECRET_KEY=sk_live_xxxxx
-PAYSTACK_PUBLIC_KEY=pk_live_xxxxx
-
-# Email
-SENDGRID_API_KEY=SG.xxxxx
-EMAIL_FROM=noreply@motopay.pl.gov.ng
-EMAIL_FROM_NAME=MotoPay
-
-# SMS
-TWILIO_ACCOUNT_SID=ACxxxxx
-TWILIO_AUTH_TOKEN=xxxxx
-TWILIO_PHONE_NUMBER=+234xxxxx
-
-# Optional
-REDIS_URL=redis://localhost:6379
-LEGACY_DB_URL=http://legacy-api.psirs.gov.ng
-LEGACY_API_KEY=xxxxx
-FIREBASE_SERVICE_ACCOUNT={"type":"service_account",...}
+```bash
+DATABASE_URL=postgresql://username:password@hostname:5432/database
 ```
 
----
+### Option 3: SQLite (Development Only)
 
-## Monitoring Setup
+**Not recommended for production**, but possible for testing:
 
-### Option 1: Sentry
+```bash
+DATABASE_URL=file:./prod.db
+```
+
+## Deployment Steps
+
+### 1. Run Migrations
+
+After setting `DATABASE_URL`, run migrations via Vercel CLI:
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Link project
+vercel link
+
+# Run migration command
+vercel env pull .env.production
+npx prisma migrate deploy
+```
+
+Or configure in `package.json`:
+
+```json
+{
+  "scripts": {
+    "build": "tsc && npx prisma generate && npx prisma migrate deploy"
+  }
+}
+```
+
+### 2. Seed Initial Data
+
+For first deployment, seed the database:
+
+```bash
+npx tsx prisma/seed.ts
+```
+
+This creates:
+- Admin user (`admin@psirs.gov.ng` / password from `ADMIN_PASSWORD`)
+- Sample agent user
+- Compliance items
+- Sample vehicle data
+
+### 3. Deploy
+
+```bash
+vercel --prod
+```
+
+## Verification
+
+### 1. Check API Health
+
+```bash
+curl https://moto-pay-backend.vercel.app/
+```
+
+Expected response:
+```json
+{
+  "success": true,
+  "message": "Welcome to MotoPay API",
+  "version": "v1"
+}
+```
+
+### 2. Test Authentication Endpoint
+
+```bash
+curl -X POST https://moto-pay-backend.vercel.app/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@psirs.gov.ng","password":"YOUR_PASSWORD"}'
+```
+
+### 3. Check CORS
+
+From frontend domain:
+- API requests should succeed without CORS errors
+- Verify in browser DevTools → Network tab
+
+## Production Checklist
+
+- [ ] All environment variables set in Vercel
+- [ ] `FRONTEND_URL` matches actual frontend domain  
+- [ ] Database created and accessible
+- [ ] Migrations run successfully (`npx prisma migrate deploy`)
+- [ ] Database seeded with initial data
+- [ ] `JWT_SECRET` and `REFRESH_TOKEN_SECRET` are strong, unique values
+- [ ] Paystack keys are **live** keys (not test)
+- [ ] SendGrid configured and email sending works
+- [ ] Admin user can login
+- [ ] API health check returns success
+
+## Security Best Practices
+
+### 1. Use Strong Secrets
+
+Generate cryptographically secure secrets:
+
+```bash
+# Generate JWT secrets
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+### 2. Rotate Secrets Regularly
+
+- Change JWT secrets periodically
+- Update in Vercel environment variables
+- Redeploy application
+
+### 3. Rate Limiting
+
+Already configured in the app:
+- Auth endpoints: 5 requests per 15 minutes
+- General API: 100 requests per 15 minutes
+
+### 4. Database Backups
+
+- Vercel Postgres: Automatic backups included
+- External DB: Configure according to provider
+
+## Monitoring & Logs
+
+### View Logs
+
+```bash
+vercel logs https://moto-pay-backend.vercel.app
+```
+
+Or in Vercel Dashboard:
+- Go to **Deployments**
+- Click on a deployment
+- View **Build Logs** and **Function Logs**
+
+### Error Tracking
+
+Consider integrating Sentry:
+
 ```bash
 npm install @sentry/node
 ```
 
-Add to `src/app.ts`:
-```typescript
-import * as Sentry from "@sentry/node";
+## Custom Domain
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  environment: process.env.NODE_ENV,
-});
-```
+To use custom domain like `api.motopay.pl.gov.ng`:
 
-### Option 2: DataDog
+1. **Project Settings → Domains**
+2. Add domain
+3. Configure DNS records
+4. Update `FRONTEND_URL` CORS to use new frontend domain
+
+## Database Migrations
+
+When updating the schema:
+
+1. Update `prisma/schema.prisma`
+2. Create migration locally:
+   ```bash
+   npx prisma migrate dev --name description
+   ```
+3. Commit migration files
+4. Push to GitHub
+5. Migrations run automatically on deployment (if configured in build script)
+
+Or manually:
+
 ```bash
-npm install dd-trace
+vercel env pull .env.production
+npx prisma migrate deploy
 ```
-
-### Option 3: New Relic
-```bash
-npm install newrelic
-```
-
----
-
-## Backup Strategy
-
-### Database Backups
-
-**Railway/Heroku:**
-- Automatic daily backups included
-
-**VPS:**
-```bash
-# Add to crontab
-0 2 * * * pg_dump motopay | gzip > /backups/motopay-$(date +\%Y\%m\%d).sql.gz
-```
-
-### File Backups (Uploads)
-```bash
-# Backup to S3
-aws s3 sync /app/uploads s3://motopay-backups/uploads
-```
-
----
 
 ## Troubleshooting
 
-### Prisma Issues
+### "Database does not exist"
+
+**Solution**: Run migrations
 ```bash
-# Regenerate client
-npx prisma generate
-
-# Reset database (CAUTION)
-npx prisma migrate reset
-
-# View studio
-npx prisma studio
+npx prisma migrate deploy
 ```
 
-### Port Already in Use
-```bash
-# Find process
-lsof -i :5000
+### "CORS Error"
 
-# Kill process
-kill -9 <PID>
-```
+**Solution**: Verify `FRONTEND_URL` environment variable
+- Should match frontend domain exactly
+- No trailing slash
 
-### Memory Issues
-```bash
-# Increase Node memory
-NODE_OPTIONS="--max-old-space-size=4096" npm start
-```
+### "JWT Error"
 
----
+**Solution**: Ensure `JWT_SECRET` and `REFRESH_TOKEN_SECRET` are set
+
+### Build Fails
+
+- Check Vercel build logs
+- Verify all dependencies are in `package.json`
+- Ensure TypeScript compiles locally (`npm run build`)
 
 ## Support
 
-For deployment issues:
-- Email: devops@motopay.pl.gov.ng
-- Documentation: https://github.com/KusuConsult-NG/MotoPay-backend
-
----
-
-**Deployment Complete! 🚀**
+- Vercel Docs: https://vercel.com/docs
+- Prisma Docs: https://www.prisma.io/docs
+- GitHub Issues: Link to your repo issues
