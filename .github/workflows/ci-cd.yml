@@ -10,21 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: motopay_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v4
       
@@ -39,11 +24,13 @@ jobs:
       
       - name: Generate Prisma Client
         run: npx prisma generate
+        env:
+          DATABASE_URL: file:./test.db
       
       - name: Run database migrations
         run: npx prisma migrate deploy
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/motopay_test
+          DATABASE_URL: file:./test.db
       
       - name: Run linter
         run: npm run lint
@@ -51,7 +38,7 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/motopay_test
+          DATABASE_URL: file:./test.db
           JWT_SECRET: test-secret
           REFRESH_TOKEN_SECRET: test-refresh-secret
           PAYSTACK_SECRET_KEY: test-paystack-key
