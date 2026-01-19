@@ -7,6 +7,7 @@ import agentRoutes from './agent.routes';
 import exceptionRoutes from './exception.routes';
 import complianceRoutes from './compliance.routes';
 import searchRoutes from './search.routes';
+import contactRoutes from './contact.routes';
 
 const router = Router();
 
@@ -18,6 +19,7 @@ router.use('/agents', agentRoutes);
 router.use('/exceptions', exceptionRoutes);
 router.use('/compliance', complianceRoutes);
 router.use('/search', searchRoutes);
+router.use('/contact', contactRoutes);
 
 // Health check
 router.get('/health', (_req, res) => {
