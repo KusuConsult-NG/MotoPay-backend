@@ -216,6 +216,64 @@ model PriceHistory {
   @@map("price_history")
 }
 
+// Content Management Models for Dynamic Pages
+
+model Service {
+  id          String   @id @default(uuid())
+  icon        String   // Material icon name (e.g., 'description', 'credit_card')
+  title       String
+  description String
+  features    String   // JSON string of feature array
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("services")
+}
+
+model AboutSection {
+  id        String   @id @default(uuid())
+  section   String   // 'mission', 'what-we-do', 'why-choose'
+  title     String
+  content   String
+  items     String?  // JSON string of items array (optional)
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("about_sections")
+}
+
+model FAQ {
+  id        String   @id @default(uuid())
+  category  String   // 'general', 'registration', 'payments', 'compliance'
+  question  String
+  answer    String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model HelpCategory {
+  id          String   @id @default(uuid())
+  icon        String   // Material icon name
+  title       String
+  link        String   // URL or route path
+  description String
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("help_categories")
+}
+
+
 model ProcessedWebhook {
   id                 String   @id @default(uuid())
   eventReference     String   @unique @map("event_reference")

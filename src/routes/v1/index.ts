@@ -8,6 +8,7 @@ import exceptionRoutes from './exception.routes';
 import complianceRoutes from './compliance.routes';
 import searchRoutes from './search.routes';
 import contactRoutes from './contact.routes';
+import contentRoutes from './content.routes';
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use('/exceptions', exceptionRoutes);
 router.use('/compliance', complianceRoutes);
 router.use('/search', searchRoutes);
 router.use('/contact', contactRoutes);
+router.use('/content', contentRoutes);
 
 // Health check
 router.get('/health', (_req, res) => {
