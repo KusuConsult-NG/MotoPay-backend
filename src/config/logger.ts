@@ -13,21 +13,16 @@ const logger = winston.createLogger({
     format: logFormat,
     defaultMeta: { service: 'motopay-api' },
     transports: [
-        new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-        new winston.transports.File({ filename: 'logs/combined.log' }),
-    ],
-});
-
-// Console logging in development
-if (config.env !== 'production') {
-    logger.add(
+        // Use console transport for all environments
+        // In production (Vercel), console output is captured in logs
+        // File-based logging fails on Vercel's read-only filesystem
         new winston.transports.Console({
             format: winston.format.combine(
                 winston.format.colorize(),
                 winston.format.simple()
             ),
-        })
-    );
-}
+        }),
+    ],
+});
 
 export default logger;
