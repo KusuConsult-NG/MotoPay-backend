@@ -12,6 +12,7 @@
         "migrate:deploy": "prisma migrate deploy",
         "db:generate": "prisma generate",
         "db:studio": "prisma studio",
+        "seed": "ts-node prisma/seed.ts",
         "test": "jest --runInBand --forceExit",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
